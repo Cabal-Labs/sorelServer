@@ -1,11 +1,12 @@
 import { 
     privateToPublic, 
-    publicToAddress, 
     bufferToHex, 
     ecsign, 
     toRpcSig, 
     keccakFromString 
 } from 'ethereumjs-util';
+import crypto from 'crypto';
+
 
 
 
@@ -31,7 +32,7 @@ async function personalSign(message, privateKey) {
     return Buffer.from(toRpcSig(signature.v, signature.r, signature.s).slice(2), 'hex');
 }
 
-async function signMessageEth(aPrivKey, wPrivKey, message) {
+async function doubleSignMessageEth(aPrivKey, wPrivKey, message) {
     const _message = Buffer.from(message);
     const avatarPrivateKey = Buffer.from(aPrivKey, 'hex');
     const walletPrivateKey = Buffer.from(wPrivKey, 'hex');
@@ -42,13 +43,14 @@ async function signMessageEth(aPrivKey, wPrivKey, message) {
     return [avatarSignature, walletSignature];
 }
 
-function deriveEthereumAddress(privateKeyHex) {
-    const privateKey = Buffer.from(privateKeyHex, 'hex');
-    const publicKey = privateToPublic(privateKey);
-    const addressBuffer = publicToAddress(publicKey);
-    
-    return bufferToHex(addressBuffer);
+async function signMessageEth(aPrivKey, message){
+    const _message = Buffer.from(message);
+    const avatarPrivateKey = Buffer.from(aPrivKey, 'hex');
+    const avatarSignature = await personalSign(_message, avatarPrivateKey);
+
+    return avatarSignature;
 }
+
 
 function generateKeyPair() {
     
@@ -69,6 +71,6 @@ function generateKeyPair() {
 
 export {
     generateKeyPair,
-    deriveEthereumAddress,
-    signMessageEth
+    signMessageEth,
+    doubleSignMessageEth
 };
