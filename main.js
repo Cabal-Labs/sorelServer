@@ -11,10 +11,15 @@ const app = express();
 
 
 app.use(cors({
-    origin: "*" 
+    origin: ["*"]
 }));
 
 app.use(bodyParser.json());
+
+app.get('/', (req, res) => {
+    res.send('Cabal Sorel Server');
+});
+
 
 app.get('/generate-key-pair', (req, res) => {
     const keyPair = generateKeyPair();
