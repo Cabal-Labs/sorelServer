@@ -6,17 +6,11 @@ import {
     keccakFromString 
 } from 'ethereumjs-util';
 import crypto from 'crypto';
+import secp256k1  from 'secp256k1';
 
-function getRandomBytes(length) {
-    return crypto.randomBytes(length);
-}
 
-function getCompressedPublicKey(publicKey) {
-    const x = publicKey.slice(1, 33);
-    const y = publicKey.slice(33, 65);
-    const prefix = y[y.length - 1] % 2 === 0 ? '02' : '03';
-    return prefix + x.toString('hex');
-}
+
+
 
 async function personalSign(message, privateKey) {
     const messageHash = keccakFromString(`\x19Ethereum Signed Message:\n${message.length}${message}`, 256);
@@ -41,15 +35,19 @@ async function signMessageEth(aPrivKey, message){
 }
 
 function generateKeyPair() {
-    const privateKey = getRandomBytes(32);
-    const publicKeyFull = privateToPublic(privateKey);
-    const publicKeyCompressed = getCompressedPublicKey(publicKeyFull);
-    const privateKeyHex = bufferToHex(privateKey).slice(2);
+    let privateKey;
+    do {
+        privateKey = crypto.randomBytes(32);
+    } while (!secp256k1.privateKeyVerify(privateKey));
+
+    const publicKey = secp256k1.publicKeyCreate(privateKey, true); 
+
     return {
-        privateKey: privateKeyHex,
-        publicKey: publicKeyCompressed
+        privateKey: privateKey.toString('hex'),
+        publicKey: Buffer.from(publicKey).toString('hex')   
     };
 }
+
 
 export {
     generateKeyPair,
