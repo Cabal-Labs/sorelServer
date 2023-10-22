@@ -5,9 +5,11 @@
   "description": "server for cabal sorel",
   "main": "main.js",
   "dependencies": {
+    "@tableland/sdk": "^4.5.3-dev.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
+    "dotenv": "^16.3.1",
     "elliptic": "^6.5.4",
     "ethereumjs-util": "^7.1.5",
     "ethers": "^6.8.0",
@@ -29,5 +31,4 @@
   "engines": {
     "node": "18.x"
   }
-  
 }
